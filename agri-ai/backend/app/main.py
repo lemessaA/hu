@@ -21,6 +21,15 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    s = get_settings()
+    if s.auth_mode == "none" and s.environment == "production":
+        logging.getLogger("agri.main").warning(
+            "AUTH_MODE=none with ENVIRONMENT=production — API is not authenticated."
+        )
+    if s.auth_mode == "trusted_host" and s.environment == "production":
+        logging.getLogger("agri.main").warning(
+            "AUTH_MODE=trusted_host — only bind to private networks; do not expose :8000 on the public internet."
+        )
     init_db()
     crop_model.load_model()
     yield

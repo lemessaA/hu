@@ -3,7 +3,7 @@ Application configuration (12-factor via environment variables).
 """
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Literal, Tuple
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -35,7 +35,11 @@ class Settings(BaseSettings):
 
     app_name: str = "AgriClimate AI Agent"
     environment: str = "development"
-    api_key: str = ""  # If empty in dev, auth middleware can allow local traffic
+    api_key: str = ""  # Used when auth_mode is api_key
+
+    # api_key — shared secret header (default). none — no auth (dev only).
+    # trusted_host — allow loopback + private RFC1918 / Docker bridge (no secret).
+    auth_mode: Literal["api_key", "none", "trusted_host"] = "api_key"
 
     database_url: str = (
         "postgresql+psycopg2://postgres:postgres@localhost:5432/agriclimate"

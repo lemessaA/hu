@@ -34,6 +34,7 @@ services:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres:5432/agriclimate
       REDIS_URL: redis://redis:6379/0
       API_KEY: ${API_KEY:-dev-agri-key}
+      AUTH_MODE: ${AUTH_MODE:-api_key}
       CORS_ORIGINS: http://localhost:3000
       GROQ_API_KEY: ${GROQ_API_KEY:-}
       GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
