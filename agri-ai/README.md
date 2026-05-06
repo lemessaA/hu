@@ -18,10 +18,10 @@ Production-oriented monorepo for a **climate-smart agriculture** assistant aimed
         │                       │                      │
         ▼                       ▼                      ▼
 ┌───────────────┐     ┌─────────────────┐    ┌────────────────────────┐
-│  PostgreSQL   │     │     Redis       │    │ OpenAI-compatible LLM  │
-│ users,        │     │ weather cache   │    │ (or demo fallback)     │
-│ chat_history  │     │ last 5 msgs     │    └────────────────────────┘
-└───────────────┘     └─────────────────┘
+│  PostgreSQL   │     │     Redis       │    │ Groq LLM (LangChain)   │
+│ users,        │     │ weather cache   │    │ + optional OpenAI API  │
+│ chat_history  │     │ last 5 msgs     │    │ (demo if no keys)      │
+└───────────────┘     └─────────────────┘    └────────────────────────┘
         ▲
         │  LangGraph state flow
         │  intent → weather → crop → knowledge → reasoning
@@ -37,7 +37,7 @@ Production-oriented monorepo for a **climate-smart agriculture** assistant aimed
    cp .env.example .env
    ```
 
-2. Set `API_KEY` and (optionally) `OPENAI_API_KEY` in `.env`.
+2. Set `API_KEY` and **`GROQ_API_KEY`** in `.env` (from [Groq Console](https://console.groq.com)). Optionally set `GROQ_MODEL`. If Groq is unset, the backend uses **`OPENAI_API_KEY`** when provided; otherwise it runs in **demo** mode (no external LLM).
 
 3. Build and run:
 
@@ -59,13 +59,15 @@ Default compose API key: `dev-agri-key` (override via `.env`).
 cd backend
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install .
 # Optional CPU PyTorch for parity with Docker:
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 export DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/agriclimate
 export REDIS_URL=redis://localhost:6379/0
 export API_KEY=dev-local
 export CORS_ORIGINS=http://localhost:3000
+export GROQ_API_KEY=your-groq-key
+export GROQ_MODEL=llama-3.3-70b-versatile
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -109,6 +111,7 @@ curl -s http://localhost:8000/chat \
 
 - **LangGraph** nodes live under `backend/app/agent/nodes/`.
 - **Redis** stores the last **5** messages per `session_id` (`app/agent/memory.py`).
+- **Reasoning LLM**: **Groq** (`langchain-groq`, `GROQ_API_KEY`, `GROQ_MODEL`) when configured; else **OpenAI-compatible** `ChatOpenAI` if `OPENAI_API_KEY` is set; else structured **demo** output.
 - **System prompt** is fixed in `backend/app/agent/prompt.py` (Problem / Insight / Action Steps).
 - **Weather**: `services/weather_service.py` — OpenWeatherMap if `OPENWEATHER_API_KEY` is set, else demo data; always cached in Redis.
 - **Crop**: `models/crop_model.py` — validates image, returns mock prediction; PyTorch import is optional for future weights.
@@ -123,6 +126,7 @@ curl -s http://localhost:8000/chat \
 
 ```
 agri-ai/
+  backend/pyproject.toml # Python deps (install: pip install .)
   backend/app/…        # FastAPI, LangGraph, SQLAlchemy models, services
   frontend/src/…       # Next.js App Router, components, React Query
   docker-compose.yml
