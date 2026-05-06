@@ -53,6 +53,36 @@ trap cleanup INT TERM EXIT
   cd "${ROOT}/backend"
   exec "$PY" -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ) &
+BACK_PID=$!
+
+api_ready() {
+  "$PY" -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).read()" >/dev/null 2>&1
+}
+
+wait_for_api() {
+  local max=60
+  local i=0
+  echo "Waiting for API at http://127.0.0.1:8000/health ..."
+  while (( i < max )); do
+    if api_ready; then
+      echo "API is up."
+      return 0
+    fi
+    if ! kill -0 "$BACK_PID" 2>/dev/null; then
+      echo "Backend exited before /health responded. Check Postgres (DATABASE_URL), Redis, and logs above."
+      return 1
+    fi
+    ((i += 1)) || true
+    sleep 1
+  done
+  echo "Timed out after ${max}s waiting for /health."
+  echo "Tip: run Postgres + Redis (e.g. npm run deps:up) and set DATABASE_URL / REDIS_URL in .env"
+  return 1
+}
+
+if ! wait_for_api; then
+  exit 1
+fi
 
 (
   cd "${ROOT}/frontend"
