@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Start FastAPI (8000) + Next.js (3000) in one terminal. Ctrl+C stops both.
-# Requires: Python 3.11+, Node 20+, and Postgres + Redis reachable (see .env).
+# Uses backend/.venv/bin/python explicitly (avoids PEP 668 / wrong pip when conda is active).
 
 set -uo pipefail
 
@@ -14,12 +14,19 @@ if [[ -f .env ]]; then
   set +a
 fi
 
-if [[ ! -d backend/.venv ]]; then
-  python3 -m venv backend/.venv
+VENV="${ROOT}/backend/.venv"
+PY="${VENV}/bin/python"
+PIP="${VENV}/bin/pip"
+
+if [[ ! -x "$PY" ]]; then
+  command -v python3 >/dev/null 2>&1 || {
+    echo "python3 not found. Install Python 3.11+."
+    exit 1
+  }
+  python3 -m venv "$VENV"
 fi
-# shellcheck disable=SC1091
-source backend/.venv/bin/activate
-pip install -qe "${ROOT}/backend"
+
+"$PIP" install -q -e "${ROOT}/backend"
 
 if [[ ! -d frontend/node_modules ]]; then
   (cd frontend && npm install)
@@ -35,7 +42,7 @@ trap cleanup INT TERM EXIT
 
 (
   cd "${ROOT}/backend"
-  exec uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+  exec "$PY" -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ) &
 
 (

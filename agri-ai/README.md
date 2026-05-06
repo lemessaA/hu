@@ -78,7 +78,7 @@ source .venv/bin/activate
 pip install -e .
 # Optional CPU PyTorch for parity with Docker:
 pip install torch --index-url https://download.pytorch.org/whl/cpu
-export DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/agriclimate
+export DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5433/agriclimate
 export REDIS_URL=redis://localhost:6379/0
 export API_KEY=dev-local
 export CORS_ORIGINS=http://localhost:3000
