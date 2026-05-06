@@ -45,10 +45,13 @@ def get_weather(location: Optional[str]) -> Dict[str, Any]:
     """
     loc = (location or "Addis Ababa, ET").strip()
     rkey = _cache_key(loc)
-    r = _redis()
-    cached = r.get(rkey)
-    if cached:
-        return json.loads(cached)
+    try:
+        r = _redis()
+        cached = r.get(rkey)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:  # noqa: BLE001
+        logger.warning("Redis cache read skipped: %s", e)
 
     data: Dict[str, Any]
     if settings.openweather_api_key:
@@ -61,7 +64,11 @@ def get_weather(location: Optional[str]) -> Dict[str, Any]:
     else:
         data = _demo_weather(loc)
 
-    r.setex(rkey, CACHE_TTL_SECONDS, json.dumps(data))
+    try:
+        r = _redis()
+        r.setex(rkey, CACHE_TTL_SECONDS, json.dumps(data))
+    except Exception as e:  # noqa: BLE001
+        logger.warning("Redis cache write skipped: %s", e)
     return data
 
 

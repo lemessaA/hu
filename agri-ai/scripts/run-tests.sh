@@ -3,12 +3,12 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT/backend"
-PY="./.venv/bin/python"
-if [[ ! -x "$PY" ]]; then
-  echo "Create venv first: cd agri-ai && python3 -m venv backend/.venv && ./backend/.venv/bin/pip install -e 'backend[dev]'"
-  exit 1
+if [[ ! -x .venv/bin/python ]]; then
+  echo "Creating backend/.venv …"
+  python3 -m venv .venv
 fi
-"$PY" -m pip install -q -e ".[dev]" || true
+PY="./.venv/bin/python"
+"$PY" -m pip install -q -e ".[dev]"
 if [[ "${RUN_LIVE:-}" == "1" ]]; then
   exec "$PY" -m pytest tests/ -v
 fi

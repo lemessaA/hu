@@ -13,10 +13,16 @@ def _request(client: tuple[str, int] | None, headers: list[tuple[bytes, bytes]] 
     return Request(
         {
             "type": "http",
+            "http_version": "1.1",
+            "scheme": "http",
             "method": "POST",
             "path": "/chat",
+            "raw_path": b"/chat",
+            "root_path": "",
             "headers": headers or [],
             "client": client,
+            "server": ("127.0.0.1", 8000),
+            "asgi": {"version": "3.0", "spec_version": "2.3"},
         }
     )
 
