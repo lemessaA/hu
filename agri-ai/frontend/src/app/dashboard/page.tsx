@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
+import { readAdviceCache } from "@/lib/offline";
 import { useOnlineStatus, useRecentAdvice } from "@/lib/hooks";
 
 export default function DashboardPage() {
@@ -11,6 +12,9 @@ export default function DashboardPage() {
   const online = useOnlineStatus();
   const qc = useQueryClient();
   const q = useRecentAdvice(online);
+  const cached = readAdviceCache();
+  const items =
+    q.data?.items && q.data.items.length > 0 ? q.data.items : cached;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
@@ -48,7 +52,7 @@ export default function DashboardPage() {
       ) : null}
 
       <ul className="space-y-3">
-        {(q.data?.items?.length ? q.data.items : []).map((it, idx) => (
+        {items.map((it, idx) => (
           <li
             key={`${it.created_at}-${idx}`}
             className="rounded-xl bg-white p-4 text-sm shadow-sm ring-1 ring-slate-200"
@@ -59,7 +63,7 @@ export default function DashboardPage() {
         ))}
       </ul>
 
-      {!q.data?.items?.length && !q.isLoading ? (
+      {!items.length && !q.isLoading ? (
         <p className="text-slate-500">{t.noAdvice}</p>
       ) : null}
     </div>
