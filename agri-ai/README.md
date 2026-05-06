@@ -139,6 +139,30 @@ curl -s http://localhost:8000/chat \
 - Image uploads are type- and size-validated (5MB cap).
 - Prefer TLS termination at your edge (nginx, cloud LB) in production.
 
+## Testing
+
+**Unit / offline tests** (no running server; uses `backend/.venv`):
+
+```bash
+cd agri-ai
+chmod +x scripts/run-tests.sh scripts/smoke-test.sh
+npm test
+# or: bash scripts/run-tests.sh
+```
+
+**With a live API** (Postgres + Redis + `uvicorn` on :8000; set `API_KEY` if `AUTH_MODE=api_key`):
+
+```bash
+export RUN_LIVE=1
+npm run test:live
+```
+
+**HTTP smoke** (curl against `LIVE_API_BASE`, default `http://127.0.0.1:8000`):
+
+```bash
+npm run smoke
+```
+
 ## Project layout
 
 ```

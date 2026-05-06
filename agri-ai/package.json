@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "bash scripts/dev.sh",
     "deps:up": "docker compose up -d postgres redis",
-    "dev:docker": "docker compose up --build"
+    "dev:docker": "docker compose up --build",
+    "test": "bash scripts/run-tests.sh",
+    "test:live": "bash -c 'export RUN_LIVE=1 && bash scripts/run-tests.sh'",
+    "smoke": "bash scripts/smoke-test.sh"
   }
 }
