@@ -5,6 +5,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List, Tuple
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # backend/app/config.py → repo root is parents[2]; backend/.env is parents[1]/.env
@@ -56,6 +57,16 @@ class Settings(BaseSettings):
     openweather_api_key: str = ""
 
     memory_window: int = 5
+
+    @field_validator("api_key", mode="before")
+    @classmethod
+    def strip_api_key(cls, v: object) -> str:
+        if v is None:
+            return ""
+        s = str(v).strip()
+        if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
+            s = s[1:-1].strip()
+        return s
 
     @property
     def cors_origin_list(self) -> List[str]:
