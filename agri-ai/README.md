@@ -59,7 +59,7 @@ Default compose API key: `dev-agri-key` (override via `.env`).
 cd backend
 python -m venv .venv
 source .venv/bin/activate
-pip install .
+pip install -e .
 # Optional CPU PyTorch for parity with Docker:
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 export DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/agriclimate
@@ -126,7 +126,7 @@ curl -s http://localhost:8000/chat \
 
 ```
 agri-ai/
-  backend/pyproject.toml # Python deps (install: pip install .)
+  backend/pyproject.toml # Python deps (install: pip install -e .)
   backend/app/…        # FastAPI, LangGraph, SQLAlchemy models, services
   frontend/src/…       # Next.js App Router, components, React Query
   docker-compose.yml
