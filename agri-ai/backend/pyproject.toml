@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agriclimate-backend"
+version = "0.1.0"
+description = "AgriClimate AI — FastAPI + LangGraph backend"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.115.6",
+    "uvicorn[standard]==0.32.1",
+    "pydantic==2.10.3",
+    "pydantic-settings==2.6.1",
+    "python-multipart==0.0.20",
+    "httpx==0.28.1",
+    "sqlalchemy==2.0.36",
+    "psycopg2-binary==2.9.10",
+    "alembic==1.14.0",
+    "redis==5.2.1",
+    "langchain==0.3.13",
+    "langchain-core==0.3.28",
+    "langchain-openai==0.2.14",
+    "langchain-groq>=0.2.0,<0.4",
+    "langgraph==0.2.59",
+    "Pillow==11.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

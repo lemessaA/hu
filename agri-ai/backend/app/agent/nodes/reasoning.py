@@ -1,11 +1,13 @@
-"""Reasoning node — OpenAI-compatible LLM synthesizes farmer-facing answer."""
+"""Reasoning node — Groq LLM (default) or OpenAI-compatible fallback."""
 from __future__ import annotations
 
 import json
 import logging
 from typing import Any, Dict, List
 
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 
 from app.agent.nodes.intent import AgentState
@@ -42,14 +44,14 @@ def reasoning_node(state: AgentState) -> Dict[str, Any]:
     }
     context_str = json.dumps(context_blob, ensure_ascii=False, indent=2)
 
-    if not settings.openai_api_key:
+    if not settings.groq_api_key and not settings.openai_api_key:
         # Offline / conference-safe fallback
         lines = [
             "Problem:",
             f"- Farmer question: {user_q}",
             "",
             "Insight:",
-            "- Demo mode (no LLM API key). Below is a structured summary from tools.",
+            "- Demo mode (set GROQ_API_KEY or OPENAI_API_KEY). Below is a structured summary from tools.",
             f"- Context: {context_str}",
             "",
             "Action Steps:",
@@ -60,12 +62,21 @@ def reasoning_node(state: AgentState) -> Dict[str, Any]:
         return {"final_response": "\n".join(lines)}
 
     try:
-        llm = ChatOpenAI(
-            api_key=settings.openai_api_key,
-            base_url=settings.openai_base_url,
-            model=settings.openai_model,
-            temperature=0.4,
-        )
+        llm: BaseChatModel
+        if settings.groq_api_key:
+            # `api_key` / `model` match current langchain_groq.ChatGroq (alias of groq_api_key / model_name)
+            llm = ChatGroq(
+                api_key=settings.groq_api_key,
+                model=settings.groq_model,
+                temperature=0.4,
+            )
+        else:
+            llm = ChatOpenAI(
+                api_key=settings.openai_api_key,
+                base_url=settings.openai_base_url,
+                model=settings.openai_model,
+                temperature=0.4,
+            )
         messages = [
             SystemMessage(content=SYSTEM_PROMPT),
             *_history_to_lc(history),

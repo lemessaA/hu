@@ -23,7 +23,11 @@ class Settings(BaseSettings):
     )
     redis_url: str = "redis://localhost:6379/0"
 
-    # OpenAI-compatible endpoint (OpenAI, Azure OpenAI, vLLM, Ollama w/ openai plugin, etc.)
+    # Primary LLM: Groq (fast inference; OpenAI-compatible API shape via LangChain)
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+
+    # Optional fallback: any OpenAI-compatible HTTP API (OpenAI, vLLM, etc.)
     openai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com/v1"
     openai_model: str = "gpt-4o-mini"
