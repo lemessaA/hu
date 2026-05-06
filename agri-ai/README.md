@@ -51,7 +51,23 @@ Production-oriented monorepo for a **climate-smart agriculture** assistant aimed
 
 Default compose API key: `dev-agri-key` (override via `.env`).
 
-## Local development (without Docker)
+## One terminal — frontend + backend (local)
+
+From the repo root, with **Postgres** and **Redis** running (e.g. `docker compose up -d postgres redis`):
+
+```bash
+cd agri-ai
+cp -n .env.example .env   # configure API_KEY, GROQ_API_KEY, DATABASE_URL, REDIS_URL
+npm run deps:up           # optional: Postgres + Redis via Docker
+npm run dev
+# or: bash scripts/dev.sh
+```
+
+This starts **FastAPI on :8000** and **Next.js on :3000**, loads variables from the **root `.env`**, and stops both on **Ctrl+C**.
+
+Open **http://localhost:3000**.
+
+## Local development (separate terminals)
 
 ### Backend
 

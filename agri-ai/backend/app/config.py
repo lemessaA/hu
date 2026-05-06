@@ -2,14 +2,32 @@
 Application configuration (12-factor via environment variables).
 """
 from functools import lru_cache
-from typing import List
+from pathlib import Path
+from typing import List, Tuple
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# backend/app/config.py → repo root is parents[2]; backend/.env is parents[1]/.env
+_CONFIG_DIR = Path(__file__).resolve().parent
+_BACKEND_DIR = _CONFIG_DIR.parent
+_REPO_ROOT = _BACKEND_DIR.parent
+
+
+def _env_file_paths() -> Tuple[str, ...]:
+    """Prefer repo-root `.env` (monorepo dev), then `backend/.env` overrides."""
+    paths: List[str] = []
+    root_env = _REPO_ROOT / ".env"
+    backend_env = _BACKEND_DIR / ".env"
+    if root_env.is_file():
+        paths.append(str(root_env))
+    if backend_env.is_file():
+        paths.append(str(backend_env))
+    return tuple(paths) if paths else (".env",)
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_env_file_paths(),
         env_file_encoding="utf-8",
         extra="ignore",
     )
