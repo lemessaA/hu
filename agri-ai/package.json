@@ -4,6 +4,7 @@
   "description": "AgriClimate AI monorepo — one command to run frontend + backend",
   "scripts": {
     "dev": "bash scripts/dev.sh",
+    "deps:up": "docker compose up -d postgres redis",
     "dev:docker": "docker compose up --build"
   }
 }
