@@ -29,6 +29,14 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff>=0.8.0",
+    "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "integration: calls a running API (set RUN_LIVE=1)",
 ]
 
 [tool.hatch.build.targets.wheel]

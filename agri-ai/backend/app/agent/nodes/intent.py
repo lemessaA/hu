@@ -4,13 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, TypedDict
 
-from app.agent.prompt import SYSTEM_PROMPT
-from app.config import get_settings
-from app.models import crop_model
-from app.services import weather_service
-
 logger = logging.getLogger(__name__)
-settings = get_settings()
 
 
 class AgentState(TypedDict, total=False):
