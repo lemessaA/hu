@@ -61,6 +61,7 @@ async def health():
         r = redis.from_url(settings.redis_url)
         r.ping()
         status["redis"] = "ok"
+        r.close()
     except Exception as e:  # noqa: BLE001
         status["redis"] = f"error: {e}"
         status["status"] = "degraded"

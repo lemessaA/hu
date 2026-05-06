@@ -11,6 +11,8 @@ import {
 import type { Locale, Messages } from "./strings";
 import { strings } from "./strings";
 
+export type { Locale } from "./strings";
+
 type Ctx = { locale: Locale; setLocale: (l: Locale) => void; t: Messages };
 
 const I18nContext = createContext<Ctx | null>(null);

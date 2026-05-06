@@ -1,7 +1,12 @@
 """
 LangGraph assembly: intent → weather → crop → knowledge → reasoning → END
 """
-from langgraph.graph import END, START, StateGraph
+try:
+    from langgraph.graph import END, START, StateGraph
+except ImportError:  # pragma: no cover
+    from langgraph.graph import END, StateGraph
+
+    START = "__start__"  # type: ignore[misc,assignment]
 
 from app.agent.nodes.crop import crop_node
 from app.agent.nodes.intent import AgentState, intent_node
