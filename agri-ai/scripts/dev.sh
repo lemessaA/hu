@@ -2,7 +2,7 @@
 # Start FastAPI (8000) + Next.js (3000) in one terminal. Ctrl+C stops both.
 # Uses backend/.venv/bin/python explicitly (avoids PEP 668 / wrong pip when conda is active).
 
-set -uo pipefail
+set -o pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
@@ -26,7 +26,16 @@ if [[ ! -x "$PY" ]]; then
   python3 -m venv "$VENV"
 fi
 
-"$PIP" install -q -e "${ROOT}/backend"
+echo "Installing backend dependencies into .venv (wait for this to finish)..."
+if ! "$PIP" install -e "${ROOT}/backend"; then
+  echo "pip install failed. Fix errors above, then run npm run dev again."
+  exit 1
+fi
+
+if ! "$PY" -c "import uvicorn" 2>/dev/null; then
+  echo "uvicorn missing after install."
+  exit 1
+fi
 
 if [[ ! -d frontend/node_modules ]]; then
   (cd frontend && npm install)
