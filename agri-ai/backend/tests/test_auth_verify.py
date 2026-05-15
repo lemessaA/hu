@@ -18,6 +18,7 @@ def _request(client: tuple[str, int] | None, headers: list[tuple[bytes, bytes]] 
             "method": "POST",
             "path": "/chat",
             "raw_path": b"/chat",
+            "query_string": b"",
             "root_path": "",
             "headers": headers or [],
             "client": client,

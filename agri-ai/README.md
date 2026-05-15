@@ -87,6 +87,8 @@ export GROQ_MODEL=llama-3.3-70b-versatile
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+The same app also loads under `fastapi dev` (FastAPI CLI) if you prefer that workflow; keep the same environment variables and port.
+
 Run Postgres + Redis locally (or via Docker only for those services).
 
 ### Frontend
