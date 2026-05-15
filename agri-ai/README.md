@@ -119,7 +119,7 @@ curl -s http://localhost:8000/chat \
 
 ## Security notes
 
-- **`AUTH_MODE`** (in `.env`): **`api_key`** (default) — shared `API_KEY` header; **`none`** — no auth (local/demo only); **`trusted_host`** — only loopback + private LAN/Docker IPs, no secret (never expose `:8000` publicly in this mode).
+- **`AUTH_MODE`** (in `.env`): **`api_key`** (default) — shared `API_KEY` header; **`none`** — no auth (local/demo only); **`trusted_host`** — only loopback + private LAN IPs, no secret (never expose `:8000` publicly in this mode).
 - Rotate `API_KEY` for any public deployment when using `api_key` mode; the Next.js app keeps it **server-side** and proxies via `/api/proxy/*`.
 - Image uploads are type- and size-validated (5MB cap).
 - Prefer TLS termination at your edge (nginx, cloud LB) in production.
@@ -155,7 +155,6 @@ agri-ai/
   backend/pyproject.toml # Python deps (install: pip install -e .)
   backend/app/…        # FastAPI, LangGraph, SQLAlchemy models, services
   frontend/src/…       # Next.js App Router, components, React Query
-  docker-compose.yml
   README.md
   .env.example
 ```
