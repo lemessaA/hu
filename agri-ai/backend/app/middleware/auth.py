@@ -8,7 +8,7 @@ from app.config import get_settings
 
 
 def _is_trusted_host(host: str | None) -> bool:
-    """Loopback, Docker/LAN private ranges (RFC1918). Not for public internet exposure."""
+    """Loopback and private LAN ranges (RFC1918). Not for public internet exposure."""
     if not host:
         return False
     if host in ("127.0.0.1", "::1", "localhost"):
@@ -41,7 +41,7 @@ async def verify_api_key(request: Request) -> None:
             return
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
-            detail="Forbidden: client address is not in the trusted network (use loopback or private LAN/Docker)",
+            detail="Forbidden: client address is not in the trusted network (use loopback or private LAN)",
         )
 
     # --- api_key mode ---
