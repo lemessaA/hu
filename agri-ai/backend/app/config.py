@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     api_key: str = ""  # Used when auth_mode is api_key
 
     # api_key — shared secret header (default). none — no auth (dev only).
-    # trusted_host — allow loopback + private RFC1918 / Docker bridge (no secret).
+    # trusted_host — allow loopback + private RFC1918 LAN ranges (no secret).
     auth_mode: Literal["api_key", "none", "trusted_host"] = "api_key"
 
     database_url: str = (
