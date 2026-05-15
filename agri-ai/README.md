@@ -28,44 +28,29 @@ Production-oriented monorepo for a **climate-smart agriculture** assistant aimed
         └──────────────────────────────────────────────────
 ```
 
-## Quick start (Docker)
+## Prerequisites
 
-1. Copy environment template:
+- Python 3.11+
+- Node.js 18+ and npm
+- A running **PostgreSQL** instance (default URL points at `localhost:5432`)
+- A running **Redis** instance (default URL points at `localhost:6379`)
 
-   ```bash
-   cd agri-ai
-   cp .env.example .env
-   ```
-
-2. Set `API_KEY` and **`GROQ_API_KEY`** in `.env` (from [Groq Console](https://console.groq.com)). Optionally set `GROQ_MODEL`. If Groq is unset, the backend uses **`OPENAI_API_KEY`** when provided; otherwise it runs in **demo** mode (no external LLM).
-
-3. Build and run:
-
-   ```bash
-   docker compose up --build
-   ```
-
-4. Open the app: `http://localhost:3000`  
-   Backend docs: `http://localhost:8000/docs`  
-   Health: `http://localhost:8000/health` (no API key)
-
-Default compose API key: `dev-agri-key` (override via `.env`).
+Install Postgres and Redis with your OS package manager (e.g. `apt install postgresql redis-server`) and make sure both services are running before starting the app.
 
 ## One terminal — frontend + backend (local)
 
-From the repo root, with **Postgres** and **Redis** running (e.g. `docker compose up -d postgres redis`):
+From the repo root, with **Postgres** and **Redis** running:
 
 ```bash
 cd agri-ai
 cp -n .env.example .env   # configure API_KEY, GROQ_API_KEY, DATABASE_URL, REDIS_URL
-npm run deps:up           # optional: Postgres + Redis via Docker
 npm run dev
 # or: bash scripts/dev.sh
 ```
 
 This starts **FastAPI on :8000** and **Next.js on :3000**, loads variables from the **root `.env`**, and stops both on **Ctrl+C**.
 
-Open **http://localhost:3000**.
+Open **http://localhost:3000**. Backend docs at `http://localhost:8000/docs`, health at `http://localhost:8000/health` (no API key).
 
 ## Local development (separate terminals)
 
@@ -76,9 +61,9 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-# Optional CPU PyTorch for parity with Docker:
+# Optional CPU PyTorch (for the crop model hook):
 pip install torch --index-url https://download.pytorch.org/whl/cpu
-export DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5433/agriclimate
+export DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/agriclimate
 export REDIS_URL=redis://localhost:6379/0
 export API_KEY=dev-local
 export CORS_ORIGINS=http://localhost:3000
@@ -88,8 +73,6 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The same app also loads under `fastapi dev` (FastAPI CLI) if you prefer that workflow; keep the same environment variables and port.
-
-Run Postgres + Redis locally (or via Docker only for those services).
 
 ### Frontend
 
